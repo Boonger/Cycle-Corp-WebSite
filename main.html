@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cycle Corp - Аналитика Solana Blockchain</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-dark: #0a0a0a;
+            --primary-purple: #6a0dad;
+            --primary-purple-light: #8a2be2;
+            --primary-pink: #c71585;
+            --accent-gradient: linear-gradient(135deg, var(--primary-purple), var(--primary-pink));
+            --solana-gradient: linear-gradient(135deg, #8a2be2, #c71585);
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --card-bg: rgba(40, 20, 60, 0.6);
+            --border-color: rgba(138, 43, 226, 0.3);
+            --highlight-color: #9d4edd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--primary-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 20% 30%, #1a0026, var(--primary-dark) 70%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Навигация */
+        header {
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--solana-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--highlight-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+            background: var(--solana-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-block;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-outline {
+            border: 2px solid var(--highlight-color);
+            color: var(--highlight-color);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--highlight-color);
+            color: #0a0a0a;
+        }
+
+        .btn-primary {
+            background: var(--solana-gradient);
+            color: #0a0a0a;
+            border: none;
+            font-weight: 700;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3);
+        }
+
+        /* Герой секция */
+        .hero {
+            padding: 160px 0 100px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: var(--solana-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+
+        .performance-badge {
+            background: rgba(138, 43, 226, 0.1);
+            border: 1px solid var(--highlight-color);
+            border-radius: 10px;
+            padding: 15px 25px;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .badge-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--highlight-color);
+        }
+
+        /* Секции */
+        section {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: var(--solana-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Особенности */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--highlight-color);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--highlight-color);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+        }
+
+        /* Продукты */
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            position: relative;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: var(--solana-gradient);
+            color: #0a0a0a;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .product-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .product-card .price {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 20px 0;
+            background: var(--solana-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .product-features {
+            list-style: none;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .product-features li {
+            padding: 8px 0;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .product-features li:last-child {
+            border-bottom: none;
+        }
+
+        .product-features li::before {
+            content: "✓";
+            color: var(--highlight-color);
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .profit-sharing {
+            background: rgba(138, 43, 226, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid var(--highlight-color);
+        }
+
+        .profit-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--highlight-color);
+        }
+
+        /* Контакты */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .contact-icon {
+            font-size: 1.5rem;
+            color: var(--highlight-color);
+        }
+
+        .contact-form {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            background: rgba(30, 30, 40, 0.5);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Футер */
+        footer {
+            background: rgba(10, 10, 10, 0.95);
+            padding: 60px 0 30px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            background: var(--solana-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+            background: var(--solana-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--solana-gradient);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Новые стили */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(40, 20, 60, 0.5);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--highlight-color);
+            margin-bottom: 5px;
+        }
+
+        .api-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .api-feature {
+            background: rgba(138, 43, 226, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--highlight-color);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .service-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--highlight-color);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--highlight-color);
+        }
+
+        .info-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(40, 20, 60, 0.5);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .info-section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--highlight-color);
+        }
+
+        .info-section ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        .info-section li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .info-section li:before {
+            content: "•";
+            color: var(--highlight-color);
+            position: absolute;
+            left: 0;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .pricing-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--highlight-color);
+            transform: scale(1.05);
+        }
+
+        .pricing-header {
+            margin-bottom: 20px;
+        }
+
+        .pricing-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 20px 0;
+            background: var(--solana-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pricing-period {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<div class="background-animation"></div>
+
+<header>
+    <div class="container">
+        <nav>
+            <div class="logo">
+                <i class="fas fa-bolt logo-icon"></i>
+                <span>CYCLE CORP</span>
+            </div>
+            <div class="nav-links">
+                <a href="#api">WebSocket API</a>
+                <a href="#services">Направления</a>
+                <a href="#pricing">Цены</a>
+                <a href="#results">Результаты</a>
+                <a href="#contacts">Подключиться</a>
+            </div>
+            <div class="nav-actions">
+                <a href="#api" class="btn btn-outline">Документация</a>
+                <a href="#contacts" class="btn btn-primary">Начать</a>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="container">
+        <div class="performance-badge">
+            <div class="badge-value">+14.8% ROI за 12 часов</div>
+            <div>Реальные результаты нашего алгоритма</div>
+        </div>
+
+        <h1>Сверхбыстрый WebSocket API для Solana</h1>
+        <p>Получайте данные из блокчейна Solana быстрее конкурентов. Наш API обрабатывает транзакции в реальном времени с задержкой менее 100мс.</p>
+
+        <div class="hero-buttons">
+            <a href="#api" class="btn btn-primary">Подключить API</a>
+            <a href="#pricing" class="btn btn-outline">Узнать цены</a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">< 100мс</div>
+                <div>Средняя задержка</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">75%</div>
+                <div>Винрейт сигналов</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">1000+</div>
+                <div>Сделок в день</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">0.1 SOL</div>
+                <div>Средняя прибыль</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="api">
+    <div class="container">
+        <div class="section-header">
+            <h2>WebSocket API для Solana</h2>
+            <p>Самый быстрый способ получать данные из блокчейна</p>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <i class="fas fa-tachometer-alt feature-icon"></i>
+                <h3>Максимальная скорость</h3>
+                <p>Задержка менее 100мс против 300-500мс у стандартных RPC. Обрабатываем до 10,000 транзакций в секунду.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-code feature-icon"></i>
+                <h3>Простая интеграция</h3>
+                <p>Чистый WebSocket API с подробной документацией. Поддержка JavaScript, Python, Go.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-shield-alt feature-icon"></i>
+                <h3>Надежность 99.9%</h3>
+                <p>Кластерная архитектура с автоматическим восстановлением. Резервные ноды в разных дата-центрах.</p>
+            </div>
+        </div>
+
+        <div class="api-features">
+            <div class="api-feature">
+                <h4><i class="fas fa-sync-alt"></i> Real-time транзакции</h4>
+                <p>Мгновенные уведомления о новых транзакциях в мемпуле</p>
+            </div>
+            <div class="api-feature">
+                <h4><i class="fas fa-chart-bar"></i> Расшифровка блокчейна</h4>
+                <p>Декодирование и анализ данных контрактов в реальном времени</p>
+            </div>
+            <div class="api-feature">
+                <h4><i class="fas fa-search"></i> Мониторинг адресов</h4>
+                <p>Отслеживание активности конкретных кошельков</p>
+            </div>
+            <div class="api-feature">
+                <h4><i class="fas fa-bell"></i> Готовые сигналы</h4>
+                <p>Сигналы по всем нашим направлениям через WebSocket</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="services" style="background: rgba(20, 15, 25, 0.7);">
+    <div class="container">
+        <div class="section-header">
+            <h2>Наши направления</h2>
+            <p>Специализированные решения для максимальной эффективности</p>
+        </div>
+
+        <div class="services-grid">
+            <div class="service-card">
+                <i class="fas fa-crosshairs service-icon"></i>
+                <h3>Снайпинг токенов</h3>
+                <p>Обнаружение и покупка перспективных токенов на самых ранних стадиях запуска.</p>
+                <ul class="product-features">
+                    <li>Мониторинг новых пулов ликвидности</li>
+                    <li>Автоматический анализ токеномики</li>
+                    <li>Приоритетный доступ к листингам</li>
+                    <li>Снижение риска скама</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-shield-alt service-icon"></i>
+                <h3>Анти рагпулл система</h3>
+                <p>Защита от rug pull и скамов с помощью продвинутого анализа контрактов.</p>
+                <ul class="product-features">
+                    <li>Анализ владельца ликвидности</li>
+                    <li>Мониторинг подозрительных транзакций</li>
+                    <li>Оценка рисков контракта</li>
+                    <li>Предупреждения в реальном времени</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-users service-icon"></i>
+                <h3>Копитрейдинг</h3>
+                <p>Высокоскоростное и эффективное копирование сделок успешных трейдеров.</p>
+                <ul class="product-features">
+                    <li>Автоматическое копирование сделок</li>
+                    <li>Фильтрация по успешности трейдеров</li>
+                    <li>Настройка риск-менеджмента</li>
+                    <li>Мгновенное исполнение</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-exchange-alt service-icon"></i>
+                <h3>Снайпинг миграции токенов</h3>
+                <p>Обнаружение и участие в миграциях токенов на ранних этапах.</p>
+                <ul class="product-features">
+                    <li>Мониторинг объявлений о миграциях</li>
+                    <li>Анализ условий миграции</li>
+                    <li>Автоматическое участие</li>
+                    <li>Расчет оптимального размера позиции</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-whale service-icon"></i>
+                <h3>Отслеживание китов</h3>
+                <p>Мониторинг транзакций крупных игроков и анализ их влияния на рынок.</p>
+                <ul class="product-features">
+                    <li>Идентификация китовых кошельков</li>
+                    <li>Анализ паттернов поведения</li>
+                    <li>Предсказание рыночных движений</li>
+                    <li>Своевременные уведомления</li>
+                </ul>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-bolt service-icon"></i>
+                <h3>WebSocket API</h3>
+                <p>Полный доступ к данным блокчейна Solana через высокоскоростной WebSocket.</p>
+                <ul class="product-features">
+                    <li>Расшифровка блокчейна</li>
+                    <li>Готовые сигналы по направлениям</li>
+                    <li>Real-time данные</li>
+                    <li>Минимальная задержка</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="pricing">
+    <div class="container">
+        <div class="section-header">
+            <h2>Наши цены</h2>
+            <p>Прозрачная система оплаты за реальные результаты</p>
+        </div>
+
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h3>WebSocket API</h3>
+                    <p>Доступ к данным блокчейна</p>
+                </div>
+                <div class="pricing-price">0.02 SOL</div>
+                <div class="pricing-period">за 10к сообщений</div>
+                <ul class="product-features">
+                    <li>Real-time данные блокчейна</li>
+                    <li>Расшифровка транзакций</li>
+                    <li>Мониторинг адресов</li>
+                    <li>Поддержка всех сетей Solana</li>
+                    <li>Документация и примеры</li>
+                </ul>
+                <a href="#contacts" class="btn btn-primary">Начать</a>
+            </div>
+
+            <div class="pricing-card featured">
+                <div class="pricing-header">
+                    <h3>Торговые сигналы</h3>
+                    <p>Автоматические сигналы через API</p>
+                </div>
+                <div class="profit-sharing">
+                    <div class="profit-value">35% от прибыли</div>
+                    <div>Только с успешных сделок</div>
+                </div>
+                <ul class="product-features">
+                    <li>Сигналы по всем направлениям</li>
+                    <li>Работа на ваших кошельках</li>
+                    <li>Автоматическая отчетность</li>
+                    <li>Прозрачная статистика</li>
+                    <li>Поддержка 24/7</li>
+                </ul>
+                <a href="#contacts" class="btn btn-primary">Получить доступ</a>
+            </div>
+
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h3>Премиум пакет</h3>
+                    <p>API + Сигналы + Поддержка</p>
+                </div>
+                <div class="pricing-price">0.03 SOL</div>
+                <div class="pricing-period">+ 25% от прибыли</div>
+                <ul class="product-features">
+                    <li>Полный доступ к WebSocket API</li>
+                    <li>Торговые сигналы всех направлений</li>
+                    <li>Приоритетная поддержка</li>
+                    <li>Кастомные решения</li>
+                    <li>Сниженная комиссия</li>
+                </ul>
+                <a href="#contacts" class="btn btn-primary">Выбрать пакет</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="results" style="background: rgba(20, 15, 25, 0.7);">
+    <div class="container">
+        <div class="section-header">
+            <h2>Реальные результаты</h2>
+            <p>Прозрачная статистика и верифицируемые данные</p>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <h3><i class="fas fa-chart-pie"></i> Последняя торговая сессия</h3>
+                <ul class="product-features">
+                    <li><strong>Всего сделок:</strong> 224 (одно направление)</li>
+                    <li><strong>Винрейт:</strong> 75.0% (168✅/56❌)</li>
+                    <li><strong>ROI:</strong> +14.8%</li>
+                    <li><strong>Общий PnL:</strong> +9.2237 SOL</li>
+                    <li><strong>Начальный баланс:</strong> 1.0000 SOL</li>
+                    <li><strong>Финальный баланс:</strong> 10.2237 SOL</li>
+                    <li><strong>Лучшая сделка:</strong> +0.9490 SOL</li>
+                    <li><strong>Худшая сделка:</strong> -0.2080 SOL</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <h3><i class="fas fa-tachometer-alt"></i> Метрики эффективности</h3>
+                <ul class="product-features">
+                    <li><strong>Profit Factor:</strong> 2.1</li>
+                    <li><strong>Sharpe Ratio:</strong> 3.2</li>
+                    <li><strong>Максимальная просадка:</strong> -12.3%</li>
+                    <li><strong>Средняя прибыль:</strong> +0.041 SOL</li>
+                    <li><strong>Средний убыток:</strong> -0.028 SOL</li>
+                    <li><strong>Среднее время сделки:</strong> 45 мин</li>
+                    <li><strong>Оптимальный размер позиции:</strong> 15-30%</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>О наших результатах</h3>
+            <p>Приведенные выше цифры отражают результаты только одного из наших торговых направлений. В действительности, мы работаем с несколькими стратегиями одновременно, что позволяет нам обрабатывать значительно больше сделок:</p>
+            <ul>
+                <li><strong>Снайпинг токенов:</strong> 300-800+ сделок в день</li>
+                <li><strong>Анти рагпулл система:</strong> предотвращение 50-100+ потенциальных убытков</li>
+                <li><strong>Копитрейдинг:</strong> 500-1200+ сделок в день</li>
+                <li><strong>Снайпинг миграции:</strong> 100-300+ сделок в день</li>
+                <li><strong>Отслеживание китов:</strong> 200-500+ сигналов в день</li>
+            </ul>
+            <p>Общее количество сделок по всем направлениям может достигать 3000+ в день в периоды высокой волатильности рынка.</p>
+        </div>
+    </div>
+</section>
+
+<section id="contacts">
+    <div class="container">
+        <div class="section-header">
+            <h2>Подключиться к сервису</h2>
+            <p>Начните использовать наш API или получать торговые сигналы</p>
+        </div>
+
+        <div class="contact-grid">
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fab fa-telegram contact-icon"></i>
+                    <div>
+                        <h3>Telegram поддержка</h3>
+                        <p>@cycle_corp_support</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope contact-icon"></i>
+                    <div>
+                        <h3>Email</h3>
+                        <p>api@cycle-corp.com</p>
+                        <p>signals@cycle-corp.com</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h3><i class="fas fa-rocket"></i> Быстрый старт</h3>
+                    <p>Получите тестовый доступ к API на 7 дней или пробный период торговых сигналов с 5 сделками.</p>
+                    <p><strong>Для подключения:</strong> предоставьте адрес кошелька для отслеживания результатов и статистики.</p>
+                </div>
+            </div>
+
+            <div class="contact-form">
+                <h3>Заявка на подключение</h3>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Ваше имя *</label>
+                        <input type="text" id="name" placeholder="Как к вам обращаться?" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact">Telegram или Email *</label>
+                        <input type="text" id="contact" placeholder="@username или email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="service">Интересующий сервис *</label>
+                        <select id="service" required>
+                            <option value="">Выберите сервис</option>
+                            <option value="api">WebSocket API</option>
+                            <option value="signals">Торговые сигналы</option>
+                            <option value="premium">Премиум пакет</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="wallet">Solana кошелек (для статистики)</label>
+                        <input type="text" id="wallet" placeholder="Ваш Solana адрес">
+                    </div>
+                    <div class="form-group">
+                        <label for="experience">Опыт торговли</label>
+                        <select id="experience">
+                            <option value="">Выберите опыт</option>
+                            <option value="beginner">Начинающий</option>
+                            <option value="intermediate">Опытный</option>
+                            <option value="pro">Профессионал</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Отправить заявку</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    <span>CYCLE CORP</span>
+                </div>
+                <p>Специализируемся на аналитике блокчейна Solana и алгоритмической торговле. Реальные результаты, прозрачные условия.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Сервисы</h3>
+                <ul class="footer-links">
+                    <li><a href="#api">WebSocket API</a></li>
+                    <li><a href="#services">Направления</a></li>
+                    <li><a href="#pricing">Цены</a></li>
+                    <li><a href="#results">Наши результаты</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Поддержка</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Документация API</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Telegram чат</a></li>
+                    <li><a href="#">База знаний</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Правовая информация</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Условия использования</a></li>
+                    <li><a href="#">Политика конфиденциальности</a></li>
+                    <li><a href="#">Декларация о рисках</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2024 Cycle Corp. Торговля на крипторынках связана с высокими рисками. Past performance не гарантирует future results.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Заявка отправлена! Мы свяжемся с вами в течение 24 часов.');
+        this.reset();
+    });
+</script>
+</body>
+</html>
