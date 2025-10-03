@@ -979,6 +979,8 @@
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Отправить заявку</button>
                 </form>
+
+                <div id="formMessage" style="display: none; margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center;"></div>
             </div>
         </div>
     </div>
@@ -1033,6 +1035,105 @@
 </footer>
 
 <script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = {
+            name: document.getElementById('name').value,
+            contact: document.getElementById('contact').value,
+            service: document.getElementById('service').value,
+            wallet: document.getElementById('wallet').value,
+            experience: document.getElementById('experience').value,
+            timestamp: new Date().toLocaleString('ru-RU')
+        };
+
+        // Показываем загрузку
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Отправка...';
+        submitBtn.disabled = true;
+
+        // Отправляем в Telegram бот
+        sendToTelegram(formData)
+            .then(result => {
+                showMessage('✅ Заявка отправлена! Мы свяжемся с вами в течение 24 часов.', 'success');
+                document.getElementById('contactForm').reset();
+            })
+            .catch(error => {
+                showMessage('❌ Ошибка отправки. Пожалуйста, напишите нам напрямую в Telegram.', 'error');
+                console.error('Form error:', error);
+            })
+            .finally(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
+    });
+
+    function sendToTelegram(formData) {
+        // Замените на реальный токен бота и ID чата
+        const BOT_TOKEN = '7474264833:AAGI8FJ_LRbYeKbWPSfRbd6mAu8KF7fs3R8';
+        const CHAT_ID = '1244184150';
+
+        const message = `
+🆕 Новая заявка с сайта:
+
+👤 Имя: ${formData.name}
+📞 Контакт: ${formData.contact}
+🎯 Сервис: ${getServiceName(formData.service)}
+💰 Кошелек: ${formData.wallet || 'Не указан'}
+📊 Опыт: ${getExperienceName(formData.experience)}
+⏰ Время: ${formData.timestamp}
+    `.trim();
+
+        return fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: message,
+                parse_mode: 'HTML'
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Telegram API error');
+                }
+                return response.json();
+            });
+    }
+
+    function getServiceName(service) {
+        const services = {
+            'api': 'WebSocket API',
+            'signals': 'Торговые сигналы',
+            'premium': 'Премиум пакет'
+        };
+        return services[service] || service;
+    }
+
+    function getExperienceName(experience) {
+        const experiences = {
+            'beginner': 'Начинающий',
+            'intermediate': 'Опытный',
+            'pro': 'Профессионал'
+        };
+        return experiences[experience] || experience || 'Не указан';
+    }
+
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('formMessage');
+        messageDiv.textContent = text;
+        messageDiv.style.display = 'block';
+        messageDiv.style.background = type === 'success' ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)';
+        messageDiv.style.border = type === 'success' ? '1px solid #4caf50' : '1px solid #f44336';
+        messageDiv.style.color = type === 'success' ? '#4caf50' : '#f44336';
+
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 5000);
+    }
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
