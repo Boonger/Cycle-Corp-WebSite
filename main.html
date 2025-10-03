@@ -50,7 +50,28 @@
             padding: 0 20px;
         }
 
-        /* Навигация */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: rgba(10, 10, 10, 0.95);
+                flex-direction: column;
+                padding: 20px;
+                display: none;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+        }
+
+        /* навигация */
         header {
             padding: 20px 0;
             position: fixed;
@@ -142,7 +163,7 @@
             box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3);
         }
 
-        /* Герой секция */
+
         .hero {
             padding: 160px 0 100px;
             text-align: center;
@@ -186,7 +207,7 @@
             color: var(--highlight-color);
         }
 
-        /* Секции */
+        /* секции */
         section {
             padding: 80px 0;
         }
@@ -210,7 +231,7 @@
             margin: 0 auto;
         }
 
-        /* Особенности */
+        /* особенности */
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -245,7 +266,7 @@
             color: var(--text-secondary);
         }
 
-        /* Продукты */
+        /* продукты */
         .products {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -324,7 +345,7 @@
             color: var(--highlight-color);
         }
 
-        /* Контакты */
+        /* контакты */
         .contact-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -382,7 +403,7 @@
             resize: vertical;
         }
 
-        /* Футер */
+        /* футер */
         footer {
             background: rgba(10, 10, 10, 0.95);
             padding: 60px 0 30px;
@@ -457,7 +478,7 @@
             font-size: 0.9rem;
         }
 
-        /* Адаптивность */
+        /* адаптивность */
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
@@ -477,7 +498,7 @@
             }
         }
 
-        /* Новые стили */
+        /* новые стили */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
