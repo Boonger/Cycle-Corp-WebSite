@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cycle Corp - Мониторинг Solana</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: rgba(25, 20, 30, 0.95);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --text-primary: #ffffff;
+      --text-secondary: #aaaaaa;
+      --accent-primary: #8a2be2;
+      --accent-secondary: #9b4dff;
+      --accent-tertiary: #ff007f;
+      --card-bg: rgba(30, 25, 45, 0.6);
+      --purple-dark: #1a0026;
+      --purple-light: #4a1e6b;
+      --gradient-primary: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
+      --gradient-secondary: linear-gradient(135deg, #6a0dad, #c71585);
+      --risk-high: #ff4444;
+      --risk-medium: #ffaa00;
+      --risk-low: #44ff44;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at 20% 30%, var(--purple-dark), var(--bg-primary) 70%);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image:
+              radial-gradient(circle at 25% 25%, rgba(74, 30, 107, 0.1) 1px, transparent 1px),
+              radial-gradient(circle at 75% 75%, rgba(74, 30, 107, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: -2;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Навигация */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-icon {
+      font-size: 1.6rem;
+      color: var(--accent-primary);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .mobile-menu-btn span {
+      width: 20px;
+      height: 2px;
+      background: var(--text-primary);
+      transition: 0.3s;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      padding: 8px 16px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: var(--gradient-primary);
+      color: var(--text-primary);
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-outline {
+      border: 1.5px solid var(--accent-primary);
+      color: var(--accent-primary);
+      background: transparent;
+    }
+
+    .btn-outline:hover {
+      background: var(--accent-primary);
+      color: var(--bg-primary);
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: var(--text-primary);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(138, 43, 226, 0.3);
+    }
+
+    .btn-success {
+      background: var(--risk-low);
+      color: #000;
+    }
+
+    .btn-warning {
+      background: var(--risk-medium);
+      color: #000;
+    }
+
+    .btn-danger {
+      background: var(--risk-high);
+      color: #fff;
+    }
+
+    /* Основные секции */
+    .hero {
+      padding: 140px 0 80px;
+      text-align: center;
+      position: relative;
+    }
+
+    section {
+      padding: 80px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .section-header h2 {
+      font-size: 2.2rem;
+      margin-bottom: 16px;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-header p {
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin: 0 auto;
+      font-size: 1.1rem;
+    }
+
+    /* Карточки */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 30px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-primary);
+      box-shadow: 0 15px 40px rgba(138, 43, 226, 0.2);
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: var(--accent-primary);
+    }
+
+    /* Мониторинг кошельков */
+    .wallet-monitoring {
+      background: rgba(20, 15, 25, 0.7);
+    }
+
+    .wallet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 24px;
+    }
+
+    .wallet-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+    }
+
+    .wallet-header {
+      display: flex;
+      justify-content: between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .wallet-address {
+      font-family: monospace;
+      background: rgba(255,255,255,0.1);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .wallet-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 12px;
+      background: rgba(138, 43, 226, 0.1);
+      border-radius: 12px;
+    }
+
+    .stat-number {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .trades-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .trade-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .trade-item:last-child {
+      border-bottom: none;
+    }
+
+    .trade-token {
+      font-weight: 600;
+    }
+
+    .trade-amount {
+      color: var(--accent-primary);
+    }
+
+    .trade-time {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    /* Система отчетов */
+    .reports-section {
+      background: rgba(20, 15, 25, 0.7);
+    }
+
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+    }
+
+    .report-card {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .report-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-primary);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .report-card.high-risk {
+      border-left: 4px solid var(--risk-high);
+    }
+
+    .report-card.medium-risk {
+      border-left: 4px solid var(--risk-medium);
+    }
+
+    .report-card.low-risk {
+      border-left: 4px solid var(--risk-low);
+    }
+
+    .risk-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .risk-high {
+      background: var(--risk-high);
+      color: white;
+    }
+
+    .risk-medium {
+      background: var(--risk-medium);
+      color: black;
+    }
+
+    .risk-low {
+      background: var(--risk-low);
+      color: black;
+    }
+
+    .report-title {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: var(--accent-primary);
+    }
+
+    .report-meta {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .report-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--accent-primary);
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+
+    /* Формы */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+    }
+
+    .contact-form {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(40, 35, 55, 0.6);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+    }
+
+    /* Внешние кнопки */
+    .external-actions {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1000;
+    }
+
+    .external-actions button {
+      width: 50px;
+      height: 50px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      color: var(--text-primary);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .external-actions button:hover {
+      background: var(--gradient-primary);
+      transform: scale(1.1);
+    }
+
+    /* Мобильная оптимизация */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 20px;
+      }
+
+      .mobile-menu-btn {
+        display: flex;
+      }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--bg-secondary);
+        flex-direction: column;
+        padding: 20px;
+        border-bottom: 1px solid var(--border-color);
+        backdrop-filter: blur(20px);
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+
+      .nav-actions {
+        display: none;
+      }
+
+      .hero {
+        padding: 120px 0 60px;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      section {
+        padding: 60px 0;
+      }
+
+      .section-header h2 {
+        font-size: 1.8rem;
+      }
+
+      .features,
+      .wallet-grid,
+      .reports-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .wallet-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .external-actions {
+        bottom: 20px;
+        right: 20px;
+      }
+
+      .external-actions button {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 16px;
+      }
+
+      .hero h1 {
+        font-size: 1.8rem;
+      }
+
+      .feature-card,
+      .wallet-card,
+      .report-card {
+        padding: 20px;
+      }
+
+      .wallet-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- Частицы на фоне -->
+<canvas id="particleCanvas" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;"></canvas>
+
+<!-- Внешние кнопки -->
+<div class="external-actions">
+  <button title="Telegram" onclick="openTelegram()">📱</button>
+  <button title="Настройки" onclick="openSettings()">⚙️</button>
+  <button title="Наверх" onclick="scrollToTop()">⬆️</button>
+</div>
+
+<header>
+  <div class="container">
+    <div class="header-content">
+      <div class="logo">
+        <i class="fas fa-bolt logo-icon"></i>
+        <span>CYCLE CORP</span>
+      </div>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="nav-links" id="navLinks">
+        <a href="#monitoring" class="active">Мониторинг</a>
+        <a href="#reports">Отчеты</a>
+        <a href="#api">API</a>
+        <a href="#contacts">Контакты</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="/history" class="btn btn-outline" target="_blank">
+          <i class="fas fa-history"></i> История
+        </a>
+        <a href="#monitoring" class="btn btn-primary">
+          <i class="fas fa-rocket"></i> Начать
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="performance-badge">
+      <div class="badge-value">+14.8% ROI за 12 часов</div>
+      <div>Реальные результаты алгоритма</div>
+    </div>
+
+    <h1>Мониторинг трейдов Solana в реальном времени</h1>
+    <p>Отслеживайте сделки успешных кошельков, получайте аналитику рисков и увеличивайте свою прибыль</p>
+
+    <div class="hero-buttons">
+      <a href="#monitoring" class="btn btn-primary">
+        <i class="fas fa-chart-line"></i> Начать мониторинг
+      </a>
+      <a href="#reports" class="btn btn-outline">
+        <i class="fas fa-file-alt"></i> Смотреть отчеты
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="monitoring" class="wallet-monitoring">
+  <div class="container">
+    <div class="section-header">
+      <h2>Мониторинг кошельков</h2>
+      <p>Отслеживайте сделки успешных трейдеров в реальном времени</p>
+    </div>
+
+    <div class="wallet-grid">
+      <div class="wallet-card">
+        <div class="wallet-header">
+          <h3><i class="fas fa-wallet"></i> Активный кошелек</h3>
+          <span class="wallet-address" id="walletAddress">CdJN...gZTc</span>
+        </div>
+
+        <div class="wallet-stats">
+          <div class="stat-item">
+            <div class="stat-number" id="totalTrades">0</div>
+            <div class="stat-label">Всего сделок</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="activeSubscriptions">1</div>
+            <div class="stat-label">Подписок</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="lastUpdate">0с</div>
+            <div class="stat-label">Обновлено</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="walletInput">Добавить кошелек для мониторинга:</label>
+          <input type="text" id="walletInput" placeholder="Введите адрес кошелька Solana">
+          <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="addWallet()">
+            <i class="fas fa-plus"></i> Добавить кошелек
+          </button>
+        </div>
+
+        <div class="form-group">
+          <button class="btn btn-success" style="width: 100%;" onclick="startMonitoring()">
+            <i class="fas fa-play"></i> Запустить мониторинг
+          </button>
+          <button class="btn btn-outline" style="width: 100%; margin-top: 10px;" onclick="stopMonitoring()">
+            <i class="fas fa-stop"></i> Остановить
+          </button>
+        </div>
+      </div>
+
+      <div class="wallet-card">
+        <h3><i class="fas fa-exchange-alt"></i> Последние трейды</h3>
+        <div class="trades-list" id="tradesList">
+          <div class="trade-item">
+            <div class="trade-info">
+              <div class="trade-token">SOL → BONK</div>
+              <div class="trade-time">2 секунды назад</div>
+            </div>
+            <div class="trade-amount">+5.2 SOL</div>
+          </div>
+          <!-- Трейды будут добавляться здесь -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reports" class="reports-section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Анализ рисков</h2>
+      <p>Автоматические отчеты по безопасности токенов</p>
+    </div>
+
+    <div class="reports-grid" id="reportsGrid">
+      <!-- Отчеты будут загружаться динамически -->
+      <div class="report-card medium-risk">
+        <span class="risk-badge risk-medium">MEDIUM</span>
+        <div class="report-title">8htfgry3bm6EVD7eMTGUPRuLkQ4qwyqzNHcy3bi1pump</div>
+        <div class="report-meta">
+          <i class="far fa-clock"></i> 2024-12-31 23:59:59
+        </div>
+        <p>Счет: 52.1/100</p>
+        <div class="report-stats">
+          <div class="stat">
+            <div class="stat-value">196</div>
+            <div class="stat-label">Сделки</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">68</div>
+            <div class="stat-label">Подозрительные</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">100.9</div>
+            <div class="stat-label">SOL</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="/history" class="btn btn-outline" target="_blank">
+        <i class="fas fa-external-link-alt"></i> Полная история отчетов
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="api">
+  <div class="container">
+    <div class="section-header">
+      <h2>WebSocket API</h2>
+      <p>Интегрируйте мониторинг в свои приложения</p>
+    </div>
+
+    <div class="features">
+      <div class="feature-card">
+        <i class="fas fa-tachometer-alt feature-icon"></i>
+        <h3>Реальное время</h3>
+        <p>Получайте данные о трейдах с задержкой менее 5мс через WebSocket соединение.</p>
+        <pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-top: 15px; font-size: 0.8rem;">
+const payload = {
+  "method": "subscribeAccountTrade",
+  "keys": ["ваш_адрес_кошелька"]
+}</pre>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-shield-alt feature-icon"></i>
+        <h3>Анализ рисков</h3>
+        <p>Автоматическая оценка рисков для каждого токена с генерацией детальных отчетов.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-chart-bar feature-icon"></i>
+        <h3>Статистика</h3>
+        <p>Подробная аналитика эффективности трейдов и успешности стратегий.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contacts">
+  <div class="container">
+    <div class="section-header">
+      <h2>Подключиться</h2>
+      <p>Начните использовать наши сервисы уже сегодня</p>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="feature-card">
+          <h3><i class="fas fa-rocket"></i> Быстрый старт</h3>
+          <p>Добавьте адрес кошелька для мониторинга и получайте трейды в реальном времени.</p>
+
+          <div style="margin-top: 20px;">
+            <h4>Поддерживаемые кошельки:</h4>
+            <ul style="color: var(--text-secondary); margin-top: 10px; padding-left: 20px;">
+              <li>Phantom</li>
+              <li>Solflare</li>
+              <li>Backpack</li>
+              <li>Любые другие Solana кошельки</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <h3>Техническая поддержка</h3>
+        <form id="supportForm">
+          <div class="form-group">
+            <label for="name">Ваше имя</label>
+            <input type="text" id="name" placeholder="Как к вам обращаться?">
+          </div>
+          <div class="form-group">
+            <label for="contact">Telegram или Email</label>
+            <input type="text" id="contact" placeholder="@username или email" required>
+          </div>
+          <div class="form-group">
+            <label for="message">Сообщение</label>
+            <textarea id="message" placeholder="Опишите вашу проблему или вопрос"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            Отправить сообщение
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Мобильное меню
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const navLinks = document.getElementById('navLinks');
+
+  mobileMenuBtn.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  });
+
+  // Закрытие меню при клике на ссылку
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('active');
+    });
+  });
+
+  // Плавная прокрутка
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+
+  // Анимация частиц
+  function initParticles() {
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    const particleCount = window.innerWidth < 768 ? 25 : 50;
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.speedY = Math.random() * 1 - 0.5;
+        this.color = `hsla(280, 100%, 60%, ${Math.random() * 0.5})`;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (this.x > canvas.width) this.x = 0;
+        if (this.x < 0) this.x = canvas.width;
+        if (this.y > canvas.height) this.y = 0;
+        if (this.y < 0) this.y = canvas.height;
+      }
+
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  }
+
+  // Функции для кнопок
+  function openTelegram() {
+    window.open('https://t.me/cycle_corp_support', '_blank');
+  }
+
+  function openSettings() {
+    alert('Настройки темы будут добавлены в следующем обновлении');
+  }
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Мониторинг кошельков
+  let monitoringInterval;
+  let totalTrades = 0;
+  let lastUpdateTime = Date.now();
+
+  function addWallet() {
+    const walletInput = document.getElementById('walletInput');
+    const address = walletInput.value.trim();
+
+    if (address && address.length > 0) {
+      alert(`Кошелек ${address} добавлен для мониторинга`);
+      walletInput.value = '';
+    } else {
+      alert('Пожалуйста, введите адрес кошелька');
+    }
+  }
+
+  function startMonitoring() {
+    if (monitoringInterval) {
+      clearInterval(monitoringInterval);
+    }
+
+    monitoringInterval = setInterval(() => {
+      // Имитация получения новых трейдов
+      if (Math.random() > 0.7) { // 30% chance of new trade
+        addNewTrade();
+      }
+      updateStats();
+    }, 2000);
+
+    alert('Мониторинг запущен');
+  }
+
+  function stopMonitoring() {
+    if (monitoringInterval) {
+      clearInterval(monitoringInterval);
+      monitoringInterval = null;
+    }
+    alert('Мониторинг остановлен');
+  }
+
+  function addNewTrade() {
+    totalTrades++;
+    const trades = ['SOL', 'BONK', 'JUP', 'JTO', 'WIF', 'PYTH'];
+    const fromToken = trades[Math.floor(Math.random() * trades.length)];
+    const toToken = trades[Math.floor(Math.random() * trades.length)];
+
+    const profit = (Math.random() * 10 - 2).toFixed(2);
+    const profitSign = profit >= 0 ? '+' : '';
+
+    const tradeItem = document.createElement('div');
+    tradeItem.className = 'trade-item';
+    tradeItem.innerHTML = `
+            <div class="trade-info">
+                <div class="trade-token">${fromToken} → ${toToken}</div>
+                <div class="trade-time">только что</div>
+            </div>
+            <div class="trade-amount" style="color: ${profit >= 0 ? '#44ff44' : '#ff4444'}">
+                ${profitSign}${profit} SOL
+            </div>
+        `;
+
+    const tradesList = document.getElementById('tradesList');
+    tradesList.insertBefore(tradeItem, tradesList.firstChild);
+
+    // Ограничиваем список 10 последними трейдами
+    if (tradesList.children.length > 10) {
+      tradesList.removeChild(tradesList.lastChild);
+    }
+  }
+
+  function updateStats() {
+    document.getElementById('totalTrades').textContent = totalTrades;
+    document.getElementById('lastUpdate').textContent = '2с';
+    lastUpdateTime = Date.now();
+  }
+
+  // Загрузка отчетов
+  function loadReports() {
+    // В реальном приложении здесь будет запрос к API
+    const reportsGrid = document.getElementById('reportsGrid');
+    // Отчеты уже встроены в HTML для демонстрации
+  }
+
+  // Обработка форм
+  document.getElementById('supportForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Сообщение отправлено! Мы ответим вам в ближайшее время.');
+    this.reset();
+  });
+
+  // Инициализация
+  document.addEventListener('DOMContentLoaded', function() {
+    initParticles();
+    loadReports();
+    updateStats();
+
+    // Адаптация canvas при изменении размера
+    window.addEventListener('resize', function() {
+      const canvas = document.getElementById('particleCanvas');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // Запускаем демо-мониторинг
+    startMonitoring();
+  });
+</script>
+</body>
+</html>
